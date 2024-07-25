@@ -1,0 +1,15 @@
+---
+apiVersion: kuadrant.io/v1alpha1
+kind: TLSPolicy
+metadata:
+  name: ${gatewayName}-tls
+  namespace: ${gatewayNS}
+spec:
+  targetRef:
+    name: ${gatewayName}
+    group: gateway.networking.k8s.io
+    kind: Gateway
+  issuerRef:
+    group: cert-manager.io
+    kind: ClusterIssuer
+    name: ${clusterIssuerName}

@@ -1,0 +1,23 @@
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: ${clusterIssuerName}
+spec:
+  acme:
+    email: ${EMAIL} 
+    privateKeySecretRef:
+      name: le-secret
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    solvers:
+
+      - dns01:
+          route53:
+            hostedZoneID: ${zid}
+            region: ${AWS_REGION}
+            accessKeyIDSecretRef:
+              key: AWS_ACCESS_KEY_ID
+              name: aws-credentials
+            secretAccessKeySecretRef:
+              key: AWS_SECRET_ACCESS_KEY
+              name: aws-credentials

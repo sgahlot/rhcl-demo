@@ -1,0 +1,141 @@
+= Red Hat Connectivity Link setup on OpenShift
+
+:icons: font
+:note-caption: :information_source:
+:warning-caption: :warning:
+:toc: left
+:toclevels: 5
+
+:url-rhcl-overview: https://developers.redhat.com/products/red-hat-connectivity-link/overview
+:url-rhcl-getting-started: https://developers.redhat.com/articles/2024/06/12/getting-started-red-hat-connectivity-link-openshift
+:url-rhcl-install-on-openshift: https://docs.kuadrant.io/0.8.0/kuadrant-operator/doc/install/install-openshift/
+:url-rhcl-secure-n-connect: https://docs.kuadrant.io/0.8.0/kuadrant-operator/doc/user-guides/secure-protect-connect-single-multi-cluster/
+:url-rhdh-lifecycle: https://access.redhat.com/support/policy/updates/developerhub
+
+
+Documentation for installing and configuring RHCL ({url-rhcl-overview}[_Red Hat Connectivity Link_]) in a repeatable manner.
+
+== Prerequisites
+RHCL depends on the following prerequisites:
+
+. OpenShift cluster running on AWS
+. `oc` command line tool is installed
+. Logged in to OpenShift using the `oc` client
+. Access to a DNS domain (called a hosted zone in AWS Route53), different from the domain used for the OpenShift cluster
+.. Top domain hosted zone should have NS records for the RHCL hosted zone
+. The IAM user should have at least these permissions:
+.. route53:ChangeResourceRecordSets
+.. route53:ListResourceRecordSets
+.. route53:GetHostedZone
+.. route53:ListHostedZones
+
+[NOTE]
+_For more details on the prerequisites, follow the {url-rhcl-getting-started}[getting started article]._
+
+== Install and config Red Hat Connectivity Link
+
+=== Install Red Hat Connectivity Link
+
+The installation of Red Hat Connectivity Link involves installation/configuration of the following components in Openshift:
+
+. Gateway API v1
+. Sail operator for Istio service mesh
+. Kuadrant operator that in turn installs other components it depends on:
+.. Cert-manager operator
+.. DNS operator
+.. Authorino operator
+.. Limitador operator
+
+[NOTE]
+_The version of Kuadrant operator used is ``v0.8.0``_
+
+Create a file named `.env` with the contents of `env.template` and update `.env` with the correct values for all the variables.
+
+Once the correct values are set in the `.env` file, run the following commands in a terminal, to install RHCL:
+[source,bash,options="nowrap"]
+----
+cd rhcl-demo/install        # <.>
+. ./.env                    # <.>
+
+./install.sh                # <.>
+----
+<.> Assuming the repository is cloned into `rhcl-demo` directory
+<.> adds the environment variables from `.env` file, in the current environment
+<.> Installs following components as part of RHCL installation:
+
+[NOTE]
+The install script makes use of `envsubst` command that is available on Mac and Linux.
+
+=== Secure and connect APIs with RHCL - TBD
+
+Now that the RHCL is installed we can go ahead with securing the APIs exposed by a Gateway.
+
+Securing and connecting using Red Hat Connectivity Link involves installation/configuration of the following components in Openshift:
+
+. ManagedZone - used by Kuadrant to setup DNS configuration
+. TLS issuer
+. Gateway
+. TLS policy
+. DNS policy
+. Auth policy
+. HTTP Route
+. Sample application
+
+Create a file named `.env` with the contents of `env.template` and update `.env` with the correct values for all the variables.
+
+Once the correct values are set in the `.env` file, run the following commands in a terminal, to secure and connect using RHCL:
+[source,bash,options="nowrap"]
+----
+cd rhcl-demo/secure_connect     # <.>
+. ./.env                        # <.>
+
+./install.sh                    # <.>
+----
+<.> Assuming the repository is cloned into `rhcl-demo` directory
+<.> adds the environment variables from `.env` file, in the current environment
+<.> Installs following components as part of RHCL installation:
+
+[NOTE]
+The install script makes use of `envsubst` command that is available on Mac and Linux.
+
+[WARNING]
+====
+This install will fail at the AuthPolicy enforcement step due to the following error:
+
+`AuthPolicy has encountered some issues: AuthScheme is not ready yet`
+====
+
+
+
+== Uninstall Red Hat Connectivity Link
+
+=== Uninstall config
+
+To uninstall Red Hat Connectivity Link run the following commands in a terminal:
+[source,bash,options="nowrap"]
+----
+cd rhcl-demo/secure_connect     # <.>
+./uninstall.sh                  # <.>
+----
+<.> Assuming the repository is cloned into `rhcl-demo` directory
+<.> Uninstalls RHCL config
+
+=== Uninstall Red Hat Connectivity Link
+
+To uninstall Red Hat Connectivity Link run the following commands in a terminal:
+[source,bash,options="nowrap"]
+----
+cd rhcl-demo/install        # <.>
+./uninstall.sh              # <.>
+----
+<.> Assuming the repository is cloned into `rhcl-demo` directory
+<.> Uninstalls following RHCL components:
+
+
+== References
+
+* {url-rhcl-overview}[RHCL - Overview] +
+* {url-rhcl-getting-started}[RHCL - Getting Started] +
+* {url-rhcl-install-on-openshift}[RHCL - Installation] +
+* {url-rhcl-secure-n-connect}[RHCL - Secure and connect APIs] +
+

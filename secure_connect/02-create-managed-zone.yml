@@ -1,0 +1,12 @@
+---
+apiVersion: kuadrant.io/v1alpha1
+kind: ManagedZone
+metadata:
+  name: managedzone
+  namespace: ${gatewayNS}
+spec:
+  id: ${zid}
+  domainName: ${rootDomain}
+  description: "Kuadrant managed zone"
+  dnsProviderSecretRef:
+    name: aws-credentials

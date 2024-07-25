@@ -1,0 +1,32 @@
+apiVersion: kuadrant.io/v1beta2
+kind: AuthPolicy
+metadata:
+  name: ${devNS}
+  namespace: ${devNS}
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: "${devNS}"
+  routeSelectors:
+  - matches:
+    - method: POST
+      path:
+        type: Exact
+        value: /v1/toys
+  rules:
+    authentication:
+      postToy_api_key:
+        apiKey:
+          selector:
+            matchLabels:
+              kuadrant.io/apikeys-by: api_key
+        credentials:
+          customHeader:
+            name: api_key
+        routeSelectors:
+        - matches:
+          - method: POST
+            path:
+              type: Exact
+              value: /v1/toys
