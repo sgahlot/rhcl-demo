@@ -61,7 +61,7 @@ cd rhcl-demo/install        # <.>
 ----
 <.> Assuming the repository is cloned into `rhcl-demo` directory
 <.> adds the environment variables from `.env` file, in the current environment
-<.> Installs following components as part of RHCL installation:
+<.> Installs various components for RHCL
 
 [NOTE]
 The install script makes use of `envsubst` command that is available on Mac and Linux.
@@ -90,21 +90,15 @@ cd rhcl-demo/secure_connect     # <.>
 . ./.env                        # <.>
 
 ./install.sh                    # <.>
+./test-route.sh                 # <.>
 ----
 <.> Assuming the repository is cloned into `rhcl-demo` directory
 <.> adds the environment variables from `.env` file, in the current environment
-<.> Installs following components as part of RHCL installation:
+<.> Installs various components to configure RHCL
+<.> Tests the route for GET and POST calls
 
 [NOTE]
 The install script makes use of `envsubst` command that is available on Mac and Linux.
-
-[WARNING]
-====
-This install will fail at the AuthPolicy enforcement step due to the following error:
-
-`AuthPolicy has encountered some issues: AuthScheme is not ready yet`
-====
-
 
 
 == Uninstall Red Hat Connectivity Link
@@ -129,7 +123,7 @@ cd rhcl-demo/install        # <.>
 ./uninstall.sh              # <.>
 ----
 <.> Assuming the repository is cloned into `rhcl-demo` directory
-<.> Uninstalls following RHCL components:
+<.> Uninstalls RHCL
 
 
 == References

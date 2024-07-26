@@ -1,6 +1,10 @@
 #!/bin/sh
 
 KS_NAMESPACE="kuadrant-system"
+
+printf "\nDeleting kuadrant config...\n"
+oc delete -f 06-kuadrant-config.yml
+
 printf "\nUninstalling Kuadrant operator...\n"
 CSV=`oc get subscription -n kuadrant-system kuadrant-operator -o yaml | grep currentCSV | awk '{print $2}'`
 oc delete -f 05-kuadrant-op.yml
@@ -22,15 +26,15 @@ do
     oc delete clusterserviceversion $CSV -n $KS_NAMESPACE
 done
 
+printf "\nDeleting CRD associated with Kuadrant Cert-manager...\n"
+oc get crd -l operators.coreos.com/cert-manager.kuadrant-system -o Name | xargs oc delete
+
 printf "\nDeleting CRD associated with Kuadrant...\n"
 # oc get crd | grep kuadrant | awk '{print $1}' | xargs oc delete crd
 oc get crd -l operators.coreos.com/authorino-operator.kuadrant-system -o Name | xargs oc delete
-oc get crd -l operators.coreos.com/kuadrant-operator.kuadrant-system -o Name | xargs oc delete
 oc get crd -l operators.coreos.com/dns-operator.kuadrant-system -o Name | xargs oc delete
 oc get crd -l operators.coreos.com/limitador-operator.kuadrant-system -o Name | xargs oc delete
-
-printf "\nDeleting CRD associated with Kuadrant Cert-manager...\n"
-oc get crd -l operators.coreos.com/cert-manager.kuadrant-system -o Name | xargs oc delete
+oc get crd -l operators.coreos.com/kuadrant-operator.kuadrant-system -o Name | xargs oc delete
 
 printf "\nDeleting $KS_NAMESPACE namespace...\n"
 oc delete ns $KS_NAMESPACE

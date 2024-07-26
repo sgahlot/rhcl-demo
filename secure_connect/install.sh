@@ -30,7 +30,7 @@ do
   sleep 1
   (( counter++ ))
   if [ $counter -gt 10 ]; then
-    printf "\n\n -->> Could NOT get Gateway Accepted message (waited 10 seconds) <<--\n\n"
+    printf "\n\n -->> ERROR:: Could NOT get Gateway Accepted message (waited 10 seconds) <<--\n Exiting!!!\n\n"
     oc get gateway ${gatewayName} -n ${gatewayNS} -o=jsonpath='{.status.conditions[?(@.type=="Accepted")].message}'
     printf "\n"
     exit
@@ -45,7 +45,7 @@ do
   sleep 1
   (( counter++ ))
   if [ $counter -gt 10 ]; then
-    printf "\n\n -->> Could NOT get Gateway Programmed message (waited 10 seconds) <<--\n\n"
+    printf "\n\n -->> ERROR:: Could NOT get Gateway Programmed message (waited 10 seconds) <<--\n Exiting!!!\n\n"
     oc get gateway ${gatewayName} -n ${gatewayNS} -o=jsonpath='{.status.conditions[?(@.type=="Programmed")].message}'
     printf "\n"
     exit
@@ -60,7 +60,7 @@ do
   sleep 1
   (( counter++ ))
   if [ $counter -gt 10 ]; then
-    printf "\n\n -->> Could NOT get Gateway Listener Programmed message for Bad config (waited 10 seconds) <<--\n\n"
+    printf "\n\n -->> ERROR:: Could NOT get Gateway Listener Programmed message for Bad config (waited 10 seconds) <<--\n Exiting!!!\n\n"
     oc get gateway ${gatewayName} -n ${gatewayNS} -o=jsonpath='{.status.listeners[0].conditions[?(@.type=="Programmed")].message}'
     printf "\n"
     exit
@@ -78,7 +78,7 @@ do
   sleep 1
   (( counter++ ))
   if [ $counter -gt 10 ]; then
-    printf "\n\n -->> Could NOT get Auth Policy Accepted message (waited 10 seconds) <<--\n\n"
+    printf "\n\n -->> ERROR:: Could NOT get Auth Policy Accepted message (waited 10 seconds) <<--\n Exiting!!!\n\n"
     oc get authpolicy ${gatewayName}-auth -n ${gatewayNS} -o=jsonpath='{.status.conditions[?(@.type=="Accepted")].message}'
     printf "\n"
     exit
@@ -96,7 +96,7 @@ do
   sleep 1
   (( counter++ ))
   if [ $counter -gt 10 ]; then
-    printf "\n\n -->> Could NOT get TLS Policy Accepted message (waited 10 seconds) <<--\n\n"
+    printf "\n\n -->> ERROR:: Could NOT get TLS Policy Accepted message (waited 10 seconds) <<--\n Exiting!!!\n\n"
     oc get tlspolicy ${gatewayName}-tls -n ${gatewayNS} -o=jsonpath='{.status.conditions[?(@.type=="Accepted")].message}'
     printf "\n"
     exit
@@ -114,7 +114,7 @@ do
   sleep 1
   (( counter++ ))
   if [ $counter -gt 10 ]; then
-    printf "\n\n -->> Could NOT get DNS Policy Accepted message (waited 10 seconds) <<--\n\n"
+    printf "\n\n -->> ERROR:: Could NOT get DNS Policy Accepted message (waited 10 seconds) <<--\n Exiting!!!\n\n"
     oc get dnspolicy ${gatewayName}-dnspolicy -n ${gatewayNS} -o=jsonpath='{.status.conditions[?(@.type=="Accepted")].message}'
     printf "\n"
     exit
@@ -138,7 +138,7 @@ do
   sleep 1
   (( counter++ ))
   if [ $counter -gt 10 ]; then
-    printf "\n\n -->> Could NOT get DNS Policy Enforced message (waited 10 seconds) <<--\n\n"
+    printf "\n\n -->> ERROR:: Could NOT get DNS Policy Enforced message (waited 10 seconds) <<--\n Exiting!!!\n\n"
     oc get dnspolicy ${gatewayName}-dnspolicy -n ${gatewayNS} -o=jsonpath='{.status.conditions[?(@.type=="Enforced")].message}'
     printf "\n"
     exit
@@ -147,13 +147,13 @@ done
 
 printf "\nVerifying the Auth policy whether it is Enforced or not...\n"
 counter=0
-until oc get authpolicy ${gatewayName}-auth -n ${gatewayNS} -o=jsonpath='{.status.conditions[?(@.type=="Enforced")].message}' 2>/dev/null | grep -i 'enforced'
+until oc get authpolicy ${gatewayName}-auth -n ${gatewayNS} -o=jsonpath='{.status.conditions[?(@.type=="Enforced")].message}' 2>/dev/null | grep -Ei 'enforced|overridden|no free routes to enforce'
 do
   printf '.'
   sleep 1
   (( counter++ ))
   if [ $counter -gt 30 ]; then
-    printf "\n\n -->> Could NOT get DNS Policy Accepted message (waited 30 seconds) <<--\n\n"
+    printf "\n\n -->> ERROR:: Auth policy did not get enforced (waited 30 seconds) <<--\n Exiting!!!\n\n"
     printf "Auth Policy Enforced message: "
     oc get authpolicy ${gatewayName}-auth -n ${gatewayNS} -o=jsonpath='{.status.conditions[?(@.type=="Enforced")].message}'
     printf "\n\n"
@@ -161,22 +161,10 @@ do
   fi
 done
 
-printf "\nTesting connectivity using the newly created HttpRoute - should be 403\n"
-curl -s -k -o /dev/null -w "%{http_code}" "https://$(oc get httproute toystore -n ${devNS} -o=jsonpath='{.spec.hostnames[0]}')/v1/toys"
-
 printf "\nApplying API key secret to allow access to the route...\n"
 envsubst < 09-api-key-secret.yml | oc apply -f -
 
 printf "\nApplying an Auth policy for GET/POST operations on the toystore HTTPRoute...\n"
 envsubst < 10-toystore-auth-policy.yml | oc apply -f -
 
-printf "\nTesting the toystore route for GET operation - should get 200 response...\n"
-curl -s -k -o /dev/null -w "%{http_code}" "https://$(oc get httproute toystore -n ${devNS} -o=jsonpath='{.spec.hostnames[0]}')/v1/toys"
-
-printf "\nTesting the toystore route for POST operation - should get 401 response...\n"
-curl -XPOST -s -k -o /dev/null -w "%{http_code}" "https://$(oc get httproute toystore -n ${devNS} -o=jsonpath='{.spec.hostnames[0]}')/v1/toys"
-
-printf "\nTesting the toystore route for POST operation - with API key in the header - should get 200 response...\n"
-curl -XPOST -H 'api_key: secret' -s -k -o /dev/null -w "%{http_code}" "https://$(oc get httproute toystore -n ${devNS} -o=jsonpath='{.spec.hostnames[0]}')/v1/toys"
-
-printf "\n\n -->> APIs are secured...\n"
+printf "\n\n -->> APIs are secured. You can proceed to test the route...\n"

@@ -51,4 +51,7 @@ do
     sleep 1
 done
 
+printf "\nConfiguring Kuadrant...\n"
+oc apply -f 06-kuadrant-config.yml
+
 printf "\n\n -->> Installation complete. Proceed to securing and connecting the APIs\n"
