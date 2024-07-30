@@ -34,9 +34,14 @@ RHCL depends on the following prerequisites:
 . `kamel` command line tool
 .. _This is NOT a RHCL prerequisite but since we will be using Red Hat build of Apache Camel, having a kamel binary
 on your system is also a prerequisite. Install the `kamel` binary from OCP `Command Line Tools` link._
+. Clone this repository on your system
+.. _Create an environment variable named `RHCL_DEMO_HOME` to point to the cloned directory._
 
 [NOTE]
-_For more details on the prerequisites, follow the {url-rhcl-getting-started}[getting started article]._
+====
+. _For more details on the prerequisites, follow the {url-rhcl-getting-started}[getting started article]._
+. _The RHCL install and uninstall scripts makes use of `envsubst` command that is available on Mac and Linux._
+====
 
 == Install and deploy Camel application
 
@@ -52,10 +57,11 @@ application using Camel:
 
 [source,bash,options="nowrap"]
 ----
-cd rhcl-demo/camel      # <.>
+cd $RHCL_DEMO_HOME/camel
+. ./.env                # <.>
 ./install.sh            # <.>
 ----
-<.> Assuming the repository is cloned into `rhcl-demo` directory
+<.> Sets environment variables, from `.env` file, in the current environment
 <.> Installs a REST application using Kamel in OpenShift cluster
 
 [IMPORTANT]
@@ -85,19 +91,15 @@ Create a file named `.env` with the contents of `env.template` and update `.env`
 Once the correct values are set in the `.env` file, run the following commands in a terminal, to install RHCL:
 [source,bash,options="nowrap"]
 ----
-cd rhcl-demo/initial-setup  # <.>
+cd $RHCL_DEMO_HOME/initial-setup
 . ./.env                    # <.>
-
 ./install.sh                # <.>
 ----
-<.> Assuming the repository is cloned into `rhcl-demo` directory
-<.> adds the environment variables from `.env` file, in the current environment
+<.> Sets environment variables, from `.env` file, in the current environment
 <.> Installs various components for RHCL
 
-[NOTE]
-The install script makes use of `envsubst` command that is available on Mac and Linux.
 
-=== Secure and connect APIs with RHCL - TBD
+=== Secure and connect APIs with RHCL
 
 Now that the RHCL is installed we can go ahead with securing the APIs exposed by a Gateway.
 
@@ -117,19 +119,48 @@ Create a file named `.env` with the contents of `env.template` and update `.env`
 Once the correct values are set in the `.env` file, run the following commands in a terminal, to secure and connect using RHCL:
 [source,bash,options="nowrap"]
 ----
-cd rhcl-demo/secure_connect     # <.>
+cd $RHCL_DEMO_HOME/secure_connect
 . ./.env                        # <.>
 
 ./install.sh                    # <.>
 ./test-route.sh                 # <.>
 ----
-<.> Assuming the repository is cloned into `rhcl-demo` directory
-<.> adds the environment variables from `.env` file, in the current environment
+<.> Sets environment variables, from `.env` file, in the current environment
 <.> Installs various components to configure RHCL
 <.> Tests the route for GET and POST calls
 
+
+== Test RHCL integration with Camel (*_and SSO - WIP_*)
+
+=== Test via script for GET/POST
+To test the RHCL integration with Camel run the following command in a terminal:
+
+[source,bash,options="nowrap"]
+----
+cd $RHCL_DEMO_HOME/secure_connect
+./test-camel-route.sh  <numeric_person)id>           # <.>
+----
+<.> This script performs following operations:
+. Invokes a GET call first to verify the connectivity status.
+.. _This call is performed with a timeout of 300 seconds_
+. If the GET call is successful, it then invokes a POST call using the provided `numeric_person_id` to
+    add a new person record in the application by sending the JSON body to the route exposed via RHCL
+
+[WARNING]
+*_Currently I am experiencing a `Could not resolve host` issue intermittently when running the script or performing a `curl` call_*
+
+=== Retrieve the records with GET call
+
+Once the previous test is successful, execute the following command to retrieve all the persons from the application:
+
+[source,bash,options="nowrap"]
+----
+curl -k "https://$(oc get httproute kamel-rest -n ${kamelNS} -o=jsonpath='{.spec.hostnames[0]}')/api/person"
+----
+
 [NOTE]
-The install script makes use of `envsubst` command that is available on Mac and Linux.
+If this command gives a `Could not resolve host` error, please re-run the command from previous section to test the
+connectivity as that command is run in a loop
 
 
 == Uninstall Red Hat Connectivity Link
@@ -139,10 +170,9 @@ The install script makes use of `envsubst` command that is available on Mac and 
 To uninstall Red Hat Connectivity Link run the following commands in a terminal:
 [source,bash,options="nowrap"]
 ----
-cd rhcl-demo/secure_connect     # <.>
+cd $RHCL_DEMO_HOME/secure_connect
 ./uninstall.sh                  # <.>
 ----
-<.> Assuming the repository is cloned into `rhcl-demo` directory
 <.> Uninstalls RHCL config from OpenShift cluster
 
 === Uninstall Red Hat Connectivity Link
@@ -150,10 +180,9 @@ cd rhcl-demo/secure_connect     # <.>
 To uninstall Red Hat Connectivity Link run the following commands in a terminal:
 [source,bash,options="nowrap"]
 ----
-cd rhcl-demo/initial-setup  # <.>
+cd $RHCL_DEMO_HOME/initial-setup
 ./uninstall.sh              # <.>
 ----
-<.> Assuming the repository is cloned into `rhcl-demo` directory
 <.> Uninstalls RHCL from OpenShift cluster
 
 
@@ -162,10 +191,9 @@ cd rhcl-demo/initial-setup  # <.>
 To uninstall Red Hat build of Apache Camel run the following commands in a terminal:
 [source,bash,options="nowrap"]
 ----
-cd rhcl-demo/camel        # <.>
+cd $RHCL_DEMO_HOME/camel
 ./uninstall.sh            # <.>
 ----
-<.> Assuming the repository is cloned into `rhcl-demo` directory
 <.> Uninstalls Camel from OpenShift cluster
 
 
