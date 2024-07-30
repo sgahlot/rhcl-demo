@@ -1,0 +1,32 @@
+apiVersion: kuadrant.io/v1beta2
+kind: AuthPolicy
+metadata:
+  name: kamel-rest
+  namespace: ${kamelNS}
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: "kamel-rest"
+  routeSelectors:
+  - matches:
+    - method: POST
+      path:
+        type: Exact
+        value: /api/person
+  rules:
+    authentication:
+      postToy_api_key:
+        apiKey:
+          selector:
+            matchLabels:
+              kuadrant.io/apikeys-by: api_key
+        credentials:
+          customHeader:
+            name: api_key
+        routeSelectors:
+        - matches:
+          - method: POST
+            path:
+              type: Exact
+              value: /api/person

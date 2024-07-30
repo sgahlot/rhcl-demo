@@ -13,6 +13,7 @@ oc delete clusterserviceversion $CSV -n $KS_NAMESPACE
 printf "\nDeleting CatalogSource for Kuadrant operator image...\n"
 oc delete -f 03-catalog-source.yml
 
+printf "\nDeleting operators..."
 for i in 'authorino-operator-stable-kuadrant-operator-catalog-kuadrant-system' \
          'dns-operator-stable-kuadrant-operator-catalog-kuadrant-system' \
          'limitador-operator-stable-kuadrant-operator-catalog-kuadrant-system' \
@@ -56,3 +57,5 @@ oc delete ns istio-system
 
 printf "\nUninstalling Gateway API v1...\n"
 oc delete -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml
+
+printf "\n RHCL and its dependent components are uninstalled...\n"

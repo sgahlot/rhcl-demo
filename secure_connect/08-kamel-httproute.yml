@@ -1,0 +1,53 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kamel-rest
+  namespace: "${kamelNS}"
+  labels:
+    deployment: rest-api
+    service: rest-api
+spec:
+  parentRefs:
+  - name: "$gatewayName"
+    namespace: "$gatewayNS"
+  hostnames:
+  - "kamel-rest.${rootDomain}"  
+  rules:
+  - backendRefs:
+    - name: rest-api
+      namespace: "${kamelNS}"
+      port: 80
+    matches:
+    - method: GET
+      path:
+        type: PathPrefix
+        value: /api/person
+  # - backendRefs:
+  #   - name: rest-api
+  #     namespace: "${kamelNS}"
+  #     port: 80
+  #   matches:
+  #   - method: GET
+  #     path:
+  #       type: Exact
+  #       value: /api/person/status
+  - backendRefs:
+    - name: rest-api
+      namespace: "${kamelNS}"
+      port: 80
+    matches:
+    - method: POST
+      path:
+        type: Exact
+        value: /api/person
+  - backendRefs:
+    - name: rest-api
+      namespace: "${kamelNS}"
+      port: 80
+    matches:
+    - method: PUT
+      path:
+        type: Exact
+        value: /api/person
+status:
+  parents: null

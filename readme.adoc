@@ -1,8 +1,9 @@
-= Red Hat Connectivity Link setup on OpenShift
+= Red Hat Connectivity Link with Camel and SSO
 
 :icons: font
 :note-caption: :information_source:
 :warning-caption: :warning:
+:important-caption: :important:
 :toc: left
 :toclevels: 5
 
@@ -13,7 +14,9 @@
 :url-rhdh-lifecycle: https://access.redhat.com/support/policy/updates/developerhub
 
 
-Documentation for installing and configuring RHCL ({url-rhcl-overview}[_Red Hat Connectivity Link_]) in a repeatable manner.
+This readme provides instructions to install and configure RHCL ({url-rhcl-overview}[_Red Hat Connectivity Link_]) as
+well as Red Hat build of Apache Camel in a repeatable manner. Once everything is configured, we will use this setup to
+showcase RHCL integration with Camel and SSO.
 
 == Prerequisites
 RHCL depends on the following prerequisites:
@@ -28,9 +31,37 @@ RHCL depends on the following prerequisites:
 .. route53:ListResourceRecordSets
 .. route53:GetHostedZone
 .. route53:ListHostedZones
+. `kamel` command line tool
+.. _This is NOT a RHCL prerequisite but since we will be using Red Hat build of Apache Camel, having a kamel binary
+on your system is also a prerequisite. Install the `kamel` binary from OCP `Command Line Tools` link._
 
 [NOTE]
 _For more details on the prerequisites, follow the {url-rhcl-getting-started}[getting started article]._
+
+== Install and deploy Camel application
+
+This section provides information on installation and deployment of a REST application using Camel.
+
+Create a file named `.env` with the contents of `env.template` and update `.env` with the correct values for
+`kamelNS` variable. This variable points to the namespace that will be used for Kamel application deployment.
+
+_This namespace will also be used for the kamel HTTP Route deployment later on._
+
+Once the correct values are set in the `.env` file, run the following commands in a terminal to install and configure an
+application using Camel:
+
+[source,bash,options="nowrap"]
+----
+cd rhcl-demo/camel      # <.>
+./install.sh            # <.>
+----
+<.> Assuming the repository is cloned into `rhcl-demo` directory
+<.> Installs a REST application using Kamel in OpenShift cluster
+
+[IMPORTANT]
+*_Even though the script will finish in a few seconds, the application deployment will take around 10 minutes before
+it is ready to process any messages_*
+
 
 == Install and config Red Hat Connectivity Link
 
@@ -54,7 +85,7 @@ Create a file named `.env` with the contents of `env.template` and update `.env`
 Once the correct values are set in the `.env` file, run the following commands in a terminal, to install RHCL:
 [source,bash,options="nowrap"]
 ----
-cd rhcl-demo/install        # <.>
+cd rhcl-demo/initial-setup  # <.>
 . ./.env                    # <.>
 
 ./install.sh                # <.>
@@ -112,18 +143,30 @@ cd rhcl-demo/secure_connect     # <.>
 ./uninstall.sh                  # <.>
 ----
 <.> Assuming the repository is cloned into `rhcl-demo` directory
-<.> Uninstalls RHCL config
+<.> Uninstalls RHCL config from OpenShift cluster
 
 === Uninstall Red Hat Connectivity Link
 
 To uninstall Red Hat Connectivity Link run the following commands in a terminal:
 [source,bash,options="nowrap"]
 ----
-cd rhcl-demo/install        # <.>
+cd rhcl-demo/initial-setup  # <.>
 ./uninstall.sh              # <.>
 ----
 <.> Assuming the repository is cloned into `rhcl-demo` directory
-<.> Uninstalls RHCL
+<.> Uninstalls RHCL from OpenShift cluster
+
+
+== Uninstall Camel
+
+To uninstall Red Hat build of Apache Camel run the following commands in a terminal:
+[source,bash,options="nowrap"]
+----
+cd rhcl-demo/camel        # <.>
+./uninstall.sh            # <.>
+----
+<.> Assuming the repository is cloned into `rhcl-demo` directory
+<.> Uninstalls Camel from OpenShift cluster
 
 
 == References

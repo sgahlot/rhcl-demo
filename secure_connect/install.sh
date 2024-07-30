@@ -121,6 +121,18 @@ do
   fi
 done
 
+printf "\nCreating a HTTPRoute for our Gateway to route traffic to the 'kamel' app...\n"
+envsubst < 08-kamel-httproute.yml | oc apply -f -
+
+printf "\nApplying API key secret to allow access to the route...\n"
+envsubst < 09-kamel-api-key-secret.yml | oc apply -f -
+
+printf "\nApplying an Auth policy for GET/POST operations on the kamel HTTPRoute...\n"
+envsubst < 10-kamel-auth-policy.yml | oc apply -f -
+
+# ------------------------------------------------------------------
+# TEMP code: for Toystore sample app - backup route to test when kamel route can't be reached
+# ------------------------------------------------------------------
 printf "\nCreating $devNS namespace...\n"
 oc create ns $devNS
 
@@ -128,7 +140,17 @@ printf "\nDeploying a new version of 'toystore' application in the $devNS namesp
 oc apply -f https://raw.githubusercontent.com/Kuadrant/kuadrant-operator/main/examples/toystore/toystore.yaml -n $devNS
 
 printf "\nCreating a HTTPRoute for our Gateway to route traffic to the 'toystore' app...\n"
-envsubst < 08-toystore-httproute.yml | oc apply -f -
+envsubst < 11-toystore-httproute.yml | oc apply -f -
+
+printf "\nApplying API key secret to allow access to the route...\n"
+envsubst < 12-toystore-api-key-secret.yml | oc apply -f -
+
+printf "\nApplying an Auth policy for GET/POST operations on the toystore HTTPRoute...\n"
+envsubst < 13-toystore-auth-policy.yml | oc apply -f -
+
+# ------------------------------------------------------------------
+# TEMP code: for Toystore sample app - backup route to test when kamel route can't be reached
+# ------------------------------------------------------------------
 
 printf "\nVerifying the DNS policy whether it is Enforced or not...\n"
 counter=0
@@ -160,11 +182,5 @@ do
     exit
   fi
 done
-
-printf "\nApplying API key secret to allow access to the route...\n"
-envsubst < 09-api-key-secret.yml | oc apply -f -
-
-printf "\nApplying an Auth policy for GET/POST operations on the toystore HTTPRoute...\n"
-envsubst < 10-toystore-auth-policy.yml | oc apply -f -
 
 printf "\n\n -->> APIs are secured. You can proceed to test the route...\n"
