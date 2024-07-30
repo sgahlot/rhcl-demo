@@ -3,7 +3,7 @@
 :icons: font
 :note-caption: :information_source:
 :warning-caption: :warning:
-:important-caption: :important:
+:important-caption: :heavy_exclamation_mark:
 :toc: left
 :toclevels: 5
 
