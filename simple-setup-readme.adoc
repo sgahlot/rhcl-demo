@@ -43,6 +43,8 @@ on your system is also a prerequisite. Install the `kamel` binary from OCP `Comm
 . _The RHCL install and uninstall scripts makes use of `envsubst` command that is available on Mac and Linux._
 ====
 
+
+
 == Setup environment variables
 
 In a terminal run the following commands:
@@ -61,75 +63,31 @@ cp env.template .env    # <.>
 <.> Sets environment variables, from `.env` file, in the current environment
 
 
+== Install and configure
 
-== Install and deploy Camel application
+This section provides information on installation and configuration of the following components:
 
-This section provides information on installation and deployment of a REST application using Camel.
+. Installation of Red Hat build of Apache Camel
+. Deployment of a REST application using Camel
+. Installation of Red Hat Connectivity Link
+. Configuration of Red Hat Connectivity Link
+
+Run the following commands in a terminal:
 
 [source,bash,options="nowrap"]
 ----
-cd $RHCL_DEMO_HOME/camel
-
-# Install a REST application using Kamel in OpenShift cluster
-./install.sh
+cd $RHCL_DEMO_HOME
+./install.sh            # <.>
 ----
+<.> This script will perform the following actions:
+.. Installs a REST application using Kamel in OpenShift cluster
+.. Installs Red Hat Connectivity Link
+.. Secures the APIs and configures exposed by Red Hat Connectivity Link to route messages to Camel
 
 [IMPORTANT]
 *_Even though the script will finish in a few seconds, the application deployment will take around 10 minutes before
 it is ready to process any messages_*
 
-
-== Install and config Red Hat Connectivity Link
-
-=== Install Red Hat Connectivity Link
-
-The installation of Red Hat Connectivity Link involves installation/configuration of the following components in Openshift:
-
-. Gateway API v1
-. Sail operator for Istio service mesh
-. Kuadrant operator that in turn installs other components it depends on:
-.. Cert-manager operator
-.. DNS operator
-.. Authorino operator
-.. Limitador operator
-
-[NOTE]
-_The version of Kuadrant operator used is ``v0.8.0``_
-
-[source,bash,options="nowrap"]
-----
-cd $RHCL_DEMO_HOME/initial-setup
-
-# Install various components for RHCL
-./install.sh
-----
-
-
-=== Secure and connect APIs with RHCL
-
-Now that the RHCL is installed we can go ahead with securing the APIs exposed by a Gateway.
-
-Securing and connecting using Red Hat Connectivity Link involves installation/configuration of the following components in Openshift:
-
-. ManagedZone - used by Kuadrant to setup DNS configuration
-. TLS issuer
-. Gateway
-. TLS policy
-. DNS policy
-. Auth policy
-. HTTP Route
-. Sample application
-
-Create a file named `.env` with the contents of `env.template` and update `.env` with the correct values for all the variables.
-
-Once the correct values are set in the `.env` file, run the following commands in a terminal, to secure and connect using RHCL:
-[source,bash,options="nowrap"]
-----
-cd $RHCL_DEMO_HOME/secure_connect
-
-# Install various components to configure RHCL
-./install.sh
-----
 
 
 == Test RHCL integration with Camel (*_and SSO - WIP_*)
@@ -139,17 +97,14 @@ To test the RHCL integration with Camel run the following command in a terminal:
 
 [source,bash,options="nowrap"]
 ----
-./$RHCL_DEMO_HOME/secure_connect/test-camel-route-get.sh                              # <.>
-./$RHCL_DEMO_HOME/secure_connect/test-camel-route-post.sh <person_id>                 # <.>
-./$RHCL_DEMO_HOME/secure_connect/test-camel-route-put.sh  <person_id> <person_name>   # <.>
+cd $RHCL_DEMO_HOME/secure_connect
+./test-camel-route.sh  <numeric_person)id>           # <.>
 ----
-<.> This script performs a GET call to verify the connectivity status.
+<.> This script performs following operations:
+. Invokes a GET call first to verify the connectivity status.
 .. _This call is performed with a timeout of 300 seconds_
-<.> This script invokes a POST call using the provided `person_id` to add a new person record in the
-    Camel application by sending the JSON body to the route exposed via RHCL
-<.> This script invokes a PUT call that uses the provided `person_name` to update the name of the person associated
-    with the provided `person_id`, in the Camel application, by sending the JSON body to the route exposed via RHCL
-
+. If the GET call is successful, it then invokes a POST call using the provided `numeric_person_id` to
+    add a new person record in the application by sending the JSON body to the route exposed via RHCL
 
 [WARNING]
 *_Currently I am experiencing a `Could not resolve host` issue intermittently when running the script or performing a `curl` call_*
@@ -164,45 +119,23 @@ curl -k "https://$(oc get httproute kamel-rest -n ${kamelNS} -o=jsonpath='{.spec
 ----
 
 [NOTE]
-If this command gives a `Could not resolve host` error, please re-run the `test-camel-route-get.sh` command from
-previous section to test the connectivity as that command is run in a loop
+If this command gives a `Could not resolve host` error, please re-run the command from previous section to test the
+connectivity as that command is run in a loop
 
 
-== Uninstall Red Hat Connectivity Link
+== Uninstall
 
-=== Uninstall config
+To uninstall Red Hat Connectivity Link and Camel, run the following commands in a terminal:
 
-To uninstall Red Hat Connectivity Link run the following commands in a terminal:
 [source,bash,options="nowrap"]
 ----
-cd $RHCL_DEMO_HOME/secure_connect
-
-# Uninstalls RHCL config from OpenShift cluster
-./uninstall.sh
+cd $RHCL_DEMO_HOME
+./uninstall.sh                  # <.>
 ----
-
-=== Uninstall Red Hat Connectivity Link
-
-To uninstall Red Hat Connectivity Link run the following commands in a terminal:
-[source,bash,options="nowrap"]
-----
-cd $RHCL_DEMO_HOME/initial-setup
-
-# Uninstalls RHCL from OpenShift cluster
-./uninstall.sh
-----
-
-
-== Uninstall Camel
-
-To uninstall Red Hat build of Apache Camel run the following commands in a terminal:
-[source,bash,options="nowrap"]
-----
-cd $RHCL_DEMO_HOME/camel
-
-# Uninstalls Camel from OpenShift cluster
-./uninstall.sh
-----
+<.> This script performs following operations in the OpenShift cluster:
+. Uninstalls RHCL config
+.. Uninstalls Red Hat Connectivity Link
+.. Uninstalls Camel
 
 
 == References

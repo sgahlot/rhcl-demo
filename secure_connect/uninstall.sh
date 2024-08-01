@@ -1,5 +1,8 @@
 #!/bin/sh
-         
+
+CURR_DIR=`dirname "$0"`
+cd $CURR_DIR
+
 printf "\n-->> Deleting all the resources used for securing and connecting the APIs...\n"
 for i in 10-kamel-auth-policy.yml       \
          09-kamel-api-key-secret.yml    \
@@ -16,7 +19,7 @@ do
   printf "\n"
 done
 
-printf "\nDeleting %s namespace...\n" $gatewayNS
-oc delete ns $gatewayNS
+printf "\nDeleting %s namespace...\n" $GATEWAY_NS
+oc delete ns $GATEWAY_NS
 
 printf "\n Deleted all the config for RHCL\n"

@@ -5,7 +5,7 @@ metadata:
   namespace: kuadrant-system
 spec:
   sourceType: grpc
-  image: quay.io/kuadrant/kuadrant-operator-catalog:v0.7.1
+  image: quay.io/kuadrant/kuadrant-operator-catalog:v0.8.0
   displayName: Kuadrant Operators
   publisher: grpc
   updateStrategy:

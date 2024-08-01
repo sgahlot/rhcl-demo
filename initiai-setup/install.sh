@@ -1,5 +1,8 @@
 #!/bin/sh
 
+CURR_DIR=`dirname "$0"`
+cd $CURR_DIR
+
 printf "Installing Gateway API v1...\n"
 oc apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml
 

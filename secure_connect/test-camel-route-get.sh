@@ -1,6 +1,6 @@
 #!/bin/sh
 
-api_endpoint="https://$(oc get httproute kamel-rest -n ${kamelNS} -o=jsonpath='{.spec.hostnames[0]}')/api/person"
+api_endpoint="https://$(oc get httproute kamel-rest -n ${KAMEL_NS} -o=jsonpath='{.spec.hostnames[0]}')/api/person"
 
 printf "\nTesting the Person route for GET operation - should get 200 response...\n"
 counter=0

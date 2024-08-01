@@ -1,5 +1,8 @@
 #!/bin/sh
 
+CURR_DIR=`dirname "$0"`
+cd $CURR_DIR
+
 KAMEL_FOUND=`which kamel`
 if [ "$KAMEL_FOUND" == "" ]; then
   printf "\n ERROR: kamel binary NOT found in the path. Please install it from OCP 'command line tools' and re-run this script\n"

@@ -2,20 +2,20 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: kamel-rest
-  namespace: "${kamelNS}"
+  namespace: "${KAMEL_NS}"
   labels:
     deployment: rest-api
     service: rest-api
 spec:
   parentRefs:
-  - name: "$gatewayName"
-    namespace: "$gatewayNS"
+  - name: "$GATEWAY_NAME"
+    namespace: "$GATEWAY_NS"
   hostnames:
-  - "kamel-rest.${rootDomain}"  
+  - "kamel-rest.${ROOT_DOMAIN_ID}"
   rules:
   - backendRefs:
     - name: rest-api
-      namespace: "${kamelNS}"
+      namespace: "${KAMEL_NS}"
       port: 80
     matches:
     - method: GET
@@ -24,7 +24,7 @@ spec:
         value: /api/person
   # - backendRefs:
   #   - name: rest-api
-  #     namespace: "${kamelNS}"
+  #     namespace: "${KAMEL_NS}"
   #     port: 80
   #   matches:
   #   - method: GET
@@ -33,7 +33,7 @@ spec:
   #       value: /api/person/status
   - backendRefs:
     - name: rest-api
-      namespace: "${kamelNS}"
+      namespace: "${KAMEL_NS}"
       port: 80
     matches:
     - method: POST
@@ -42,7 +42,7 @@ spec:
         value: /api/person
   - backendRefs:
     - name: rest-api
-      namespace: "${kamelNS}"
+      namespace: "${KAMEL_NS}"
       port: 80
     matches:
     - method: PUT

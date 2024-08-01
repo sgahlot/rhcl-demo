@@ -14,7 +14,7 @@ person_id=$1
 header_api_key="api_key: secret"
 header_content_type="Content-Type: application/json"
 body_json=$(printf '{"id": %s, "name": "person-%s"}' "$person_id" "$person_id")
-api_endpoint="https://$(oc get httproute kamel-rest -n ${kamelNS} -o=jsonpath='{.spec.hostnames[0]}')/api/person"
+api_endpoint="https://$(oc get httproute kamel-rest -n ${KAMEL_NS} -o=jsonpath='{.spec.hostnames[0]}')/api/person"
 
 printf "\nTesting the kamel route for POST operation - with API key in the header - should get 200 or 500 response...\n"
 until curl -XPOST -H "$header_api_key" -H "$header_content_type" -s -k -o /dev/null -w "%{http_code}" "$api_endpoint" -d "$body_json" | grep -E "[245][0-9][0-9]"

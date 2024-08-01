@@ -1,9 +1,7 @@
 #!/bin/sh
 
 printf "\n-> Calling RHCL Config uninstall...\n"
-cd secure_connect
-./uninstall.sh
-cd ..
+./secure_connect/uninstall.sh
 
 if [ $? -ne 0 ]; then
   printf "\n -->> FAILURE in RHCL config uninstallation...\n"
@@ -11,9 +9,7 @@ if [ $? -ne 0 ]; then
 fi
 
 printf "\n-> Calling RHCL uninstall...\n"
-cd initiai-setup
-./uninstall.sh
-cd ..
+./initiai-setup/uninstall.sh
 
 if [ $? -ne 0 ]; then
   printf "\n -->> FAILURE in RHCL uninstallation...\n"
@@ -21,6 +17,4 @@ if [ $? -ne 0 ]; then
 fi
 
 printf "\n-> Calling Camel uninstall...\n"
-cd camel
-./uninstall.sh
-cd ..
+./camel/uninstall.sh

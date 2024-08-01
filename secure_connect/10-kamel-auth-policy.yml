@@ -2,7 +2,7 @@ apiVersion: kuadrant.io/v1beta2
 kind: AuthPolicy
 metadata:
   name: kamel-rest
-  namespace: ${kamelNS}
+  namespace: ${KAMEL_NS}
 spec:
   targetRef:
     group: gateway.networking.k8s.io

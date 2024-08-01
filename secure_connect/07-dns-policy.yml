@@ -2,8 +2,8 @@
 apiVersion: kuadrant.io/v1alpha1
 kind: DNSPolicy
 metadata:
-  name: ${gatewayName}-dnspolicy
-  namespace: ${gatewayNS}
+  name: ${GATEWAY_NAME}-dnspolicy
+  namespace: ${GATEWAY_NS}
 spec:
   routingStrategy: loadbalanced
   loadBalancing:
@@ -12,6 +12,6 @@ spec:
     weighted:
       defaultWeight: 120 
   targetRef:
-    name: ${gatewayName}
+    name: ${GATEWAY_NAME}
     group: gateway.networking.k8s.io
     kind: Gateway
