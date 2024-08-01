@@ -4,13 +4,13 @@
 printf "\nCreating $gatewayNS namespace...\n"
 oc create ns $gatewayNS
 
-printf "\nCreating secret (using AWS env vars) for ManagedZone - in kuadrant-system namespace...\n"
+printf "\nCreating secret (using AWS env vars) for ManagedZone - in %s namespace...\n" $gatewayNS
 envsubst < 01-secret.yml | oc apply -f - -n $gatewayNS
 
-printf "\nCreating ManagedZone...\n"
-envsubst < 02-create-managed-zone.yml | oc apply -f -
+printf "\nCreating ManagedZone - used by Kuadrant to setup DNS configuration...\n"
+envsubst < 02-managed-zone.yml | oc apply -f -
 
-printf "\nWaiting for the ManagedZone to be fully ready...\n"
+printf "\nWaiting for the ManagedZone to be fully ready in %s namespace...\n" $gatewayNS
 oc wait managedzone/managedzone -n $gatewayNS --for="condition=Ready=true"
 
 printf "\nDefining a TLS issuer for TLS certificates for secure communications to the Gateway...\n"
@@ -85,6 +85,7 @@ do
   fi
 done
 
+# This creates "_acme-challenge.$rootDomain" record in the hosted zone
 printf "\nApplying a TLS Policy...\n"
 envsubst < 06-tls-policy.yml | oc apply -f -
 
@@ -121,6 +122,10 @@ do
   fi
 done
 
+# On the execution of httproute CR, several records are added to the hosted zone:
+#   *.$rootDomain CNAME, klb.$rootDomain CNAME (US), klb.$rootDomain CNAME (Default),
+#   kuadrant-cname.us.klb.$rootDomain TXT, us.klb.$rootDomain CNAME, kuadrant-cname-klb.$rootDomain TXT (US),
+#   kuadrant-cname-klb.$rootDomain TXT (Default), kuadrant-cname-wokdcard.$rootDomain TXT (Simple)
 printf "\nCreating a HTTPRoute for our Gateway to route traffic to the 'kamel' app...\n"
 envsubst < 08-kamel-httproute.yml | oc apply -f -
 
@@ -129,28 +134,6 @@ envsubst < 09-kamel-api-key-secret.yml | oc apply -f -
 
 printf "\nApplying an Auth policy for GET/POST operations on the kamel HTTPRoute...\n"
 envsubst < 10-kamel-auth-policy.yml | oc apply -f -
-
-# ------------------------------------------------------------------
-# TEMP code: for Toystore sample app - backup route to test when kamel route can't be reached
-# ------------------------------------------------------------------
-printf "\nCreating $devNS namespace...\n"
-oc create ns $devNS
-
-printf "\nDeploying a new version of 'toystore' application in the $devNS namespace...\n"
-oc apply -f https://raw.githubusercontent.com/Kuadrant/kuadrant-operator/main/examples/toystore/toystore.yaml -n $devNS
-
-printf "\nCreating a HTTPRoute for our Gateway to route traffic to the 'toystore' app...\n"
-envsubst < 11-toystore-httproute.yml | oc apply -f -
-
-printf "\nApplying API key secret to allow access to the route...\n"
-envsubst < 12-toystore-api-key-secret.yml | oc apply -f -
-
-printf "\nApplying an Auth policy for GET/POST operations on the toystore HTTPRoute...\n"
-envsubst < 13-toystore-auth-policy.yml | oc apply -f -
-
-# ------------------------------------------------------------------
-# TEMP code: for Toystore sample app - backup route to test when kamel route can't be reached
-# ------------------------------------------------------------------
 
 printf "\nVerifying the DNS policy whether it is Enforced or not...\n"
 counter=0
