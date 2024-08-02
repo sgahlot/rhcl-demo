@@ -160,7 +160,7 @@ Once the previous test is successful, execute the following command to retrieve 
 
 [source,bash,options="nowrap"]
 ----
-curl -k "https://$(oc get httproute kamel-rest -n ${kamelNS} -o=jsonpath='{.spec.hostnames[0]}')/api/person"
+curl -k "https://$(oc get httproute kamel-rest -n ${KAMEL_NS} -o=jsonpath='{.spec.hostnames[0]}')/api/person"
 ----
 
 [NOTE]
