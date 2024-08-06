@@ -139,9 +139,9 @@ To test the RHCL integration with Camel run the following command in a terminal:
 
 [source,bash,options="nowrap"]
 ----
-./$RHCL_DEMO_HOME/secure_connect/test-camel-route-get.sh                              # <.>
-./$RHCL_DEMO_HOME/secure_connect/test-camel-route-post.sh <person_id>                 # <.>
-./$RHCL_DEMO_HOME/secure_connect/test-camel-route-put.sh  <person_id> <person_name>   # <.>
+$RHCL_DEMO_HOME/secure_connect/test-camel-route-get.sh                              # <.>
+$RHCL_DEMO_HOME/secure_connect/test-camel-route-post.sh <person_id>                 # <.>
+$RHCL_DEMO_HOME/secure_connect/test-camel-route-put.sh  <person_id> <person_name>   # <.>
 ----
 <.> This script performs a GET call to verify the connectivity status.
 .. _This call is performed with a timeout of 300 seconds_

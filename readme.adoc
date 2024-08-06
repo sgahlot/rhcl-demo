@@ -92,22 +92,37 @@ it is ready to process any messages_*
 
 == Test RHCL integration with Camel (*_and SSO - WIP_*)
 
-=== Test via script for GET/POST
+=== Test GET operation
 To test the RHCL integration with Camel run the following command in a terminal:
 
 [source,bash,options="nowrap"]
 ----
-cd $RHCL_DEMO_HOME/secure_connect
-./test-camel-route.sh  <numeric_person)id>           # <.>
+$RHCL_DEMO_HOME/secure_connect/test-camel-route-get.sh
 ----
-<.> This script performs following operations:
-. Invokes a GET call first to verify the connectivity status.
-.. _This call is performed with a timeout of 300 seconds_
-. If the GET call is successful, it then invokes a POST call using the provided `numeric_person_id` to
-    add a new person record in the application by sending the JSON body to the route exposed via RHCL
+This script performs a GET call to verify the connectivity status, _with a timeout of 300 seconds_
 
-[WARNING]
-*_Currently I am experiencing a `Could not resolve host` issue intermittently when running the script or performing a `curl` call_*
+
+=== Test POST operation
+To insert a new record in the application run the following command in a terminal:
+
+[source,bash,options="nowrap"]
+----
+$RHCL_DEMO_HOME/secure_connect/test-camel-route-post.sh <person_id> <person_name>
+----
+This script invokes a POST call using the provided `person_id` and `person_name` values, to add a new person record
+in the Camel application by sending the JSON body to the route exposed via RHCL
+
+
+=== Test PUT operation
+To update an existing record in the application run the following command in a terminal:
+
+[source,bash,options="nowrap"]
+----
+$RHCL_DEMO_HOME/secure_connect/test-camel-route-put.sh  <person_id> <person_name>
+----
+This script invokes a PUT call that uses the provided `person_name` to update the name of the person associated
+with the provided `person_id`, in the Camel application, by sending the JSON body to the route exposed via RHCL
+
 
 === Retrieve the records with GET call
 
@@ -118,9 +133,6 @@ Once the previous test is successful, execute the following command to retrieve 
 curl -k "https://$(oc get httproute kamel-rest -n ${KAMEL_NS} -o=jsonpath='{.spec.hostnames[0]}')/api/person"
 ----
 
-[NOTE]
-If this command gives a `Could not resolve host` error, please re-run the command from previous section to test the
-connectivity as that command is run in a loop
 
 
 == Uninstall
@@ -134,8 +146,8 @@ cd $RHCL_DEMO_HOME
 ----
 <.> This script performs following operations in the OpenShift cluster:
 . Uninstalls RHCL config
-.. Uninstalls Red Hat Connectivity Link
-.. Uninstalls Camel
+. Uninstalls Red Hat Connectivity Link
+. Uninstalls Camel
 
 
 == References

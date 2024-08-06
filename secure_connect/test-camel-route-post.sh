@@ -1,8 +1,9 @@
 #!/bin/sh
 
-if [ $# -ne 1 ]; then
-  printf "\nUSAGE: $0 <numeric_id>"
-  printf "\n A new person entry will be created using the numeric id provided on command line"
+if [ $# -ne 2 ]; then
+  printf "\nUSAGE: $0 <person_id> <person_name>"
+  printf "\n A new person entry will be created using the 'person_id' and 'person_name'"
+  printf "\n provided on command line."
   printf "\n Please make sure the id does not already belong to an existing person"
   printf "\nExiting!!!\n"
   exit -1
@@ -11,9 +12,10 @@ fi
 counter=0
 
 person_id=$1
+person_name="$2"
 header_api_key="api_key: secret"
 header_content_type="Content-Type: application/json"
-body_json=$(printf '{"id": %s, "name": "person-%s"}' "$person_id" "$person_id")
+body_json=$(printf '{"id": %s, "name": "%s"}' "$person_id" "$person_name")
 api_endpoint="https://$(oc get httproute kamel-rest -n ${KAMEL_NS} -o=jsonpath='{.spec.hostnames[0]}')/api/person"
 
 printf "\nTesting the kamel route for POST operation - with API key in the header - should get 200 or 500 response...\n"
