@@ -5,7 +5,6 @@ cd $CURR_DIR
 
 printf "\n-->> Deleting all the resources used for securing and connecting the APIs...\n"
 for i in 10-kamel-auth-policy.yml       \
-         09-kamel-api-key-secret.yml    \
          08-kamel-httproute.yml         \
          07-dns-policy.yml              \
          06-tls-policy.yml              \

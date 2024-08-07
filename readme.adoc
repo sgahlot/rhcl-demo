@@ -97,7 +97,7 @@ To test the RHCL integration with Camel run the following command in a terminal:
 
 [source,bash,options="nowrap"]
 ----
-$RHCL_DEMO_HOME/secure_connect/test-camel-route-get.sh
+$RHCL_DEMO_HOME/secure_connect/test-camel-route.sh GET
 ----
 This script performs a GET call to verify the connectivity status, _with a timeout of 300 seconds_
 
@@ -107,21 +107,28 @@ To insert a new record in the application run the following command in a termina
 
 [source,bash,options="nowrap"]
 ----
-$RHCL_DEMO_HOME/secure_connect/test-camel-route-post.sh <person_id> <person_name>
+$RHCL_DEMO_HOME/secure_connect/test-camel-route.sh POST <person_id> <person_name>
 ----
 This script invokes a POST call using the provided `person_id` and `person_name` values, to add a new person record
 in the Camel application by sending the JSON body to the route exposed via RHCL
 
+[NOTE]
+_When invoking the `POST` call, this script will also retrieve the JWT from OIDC provider as the JWT is used
+for authentication purpose._
 
 === Test PUT operation
 To update an existing record in the application run the following command in a terminal:
 
 [source,bash,options="nowrap"]
 ----
-$RHCL_DEMO_HOME/secure_connect/test-camel-route-put.sh  <person_id> <person_name>
+$RHCL_DEMO_HOME/secure_connect/test-camel-route.sh PUT <person_id> <person_name>
 ----
 This script invokes a PUT call that uses the provided `person_name` to update the name of the person associated
 with the provided `person_id`, in the Camel application, by sending the JSON body to the route exposed via RHCL
+
+[NOTE]
+_When invoking the `PUT` call, this script will also retrieve the JWT from OIDC provider as the JWT is used
+for authentication purpose._
 
 
 === Retrieve the records with GET call

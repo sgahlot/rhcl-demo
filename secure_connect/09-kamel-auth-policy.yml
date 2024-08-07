@@ -23,17 +23,4 @@ spec:
       keycloak-users:
         jwt:
           issuerUrl: ${OPENID_AUTH_URL}
-        # credentials:
-        #   customHeader:
-        #     name: Authorization
-        # routeSelectors:
-        # - matches:
-        #   - method: POST
-        #     path:
-        #       type: Exact
-        #       value: /api/person
-        # - matches:
-        #   - method: PUT
-        #     path:
-        #       type: Exact
-        #       value: /api/person
+
