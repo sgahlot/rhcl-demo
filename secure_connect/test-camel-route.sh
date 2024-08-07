@@ -18,12 +18,6 @@ function check_env_for_auth() {
   elif [ "$OPENID_AUTH_URL" == "" ]; then
     printf "\n ERROR: Please setup 'OPENID_AUTH_URL' env variable\n"
     exit 1
-  elif [ "$OPENID_USER" == "" ]; then
-    printf "\n ERROR: Please setup 'OPENID_USER' env variable\n"
-    exit 1
-  elif [ "$OPENID_PASS" == "" ]; then
-    printf "\n ERROR: Please setup 'OPENID_PASS' env variable\n"
-    exit 1
   fi  
 }
 
@@ -112,6 +106,7 @@ function perform_call() {
   person_id=$2
   person_name="$3"
 
+  # Get the JWT to use in the next POST/PUT
   get_token
 
   header_content_type="Content-Type: application/json"
@@ -119,9 +114,6 @@ function perform_call() {
   header_auth="Authorization: Bearer $ACCESS_TOKEN"
 
   printf "\nTesting the Camel route for %s operation using JWT for Auth - should get either 200 or 500 response...\n" "$http_method"
-  # http_method="-X${http_method}"
-
-  # echo "\n header_auth=[$header_auth]\n"
 
   curl -X${http_method} -H "$header_auth" -H "$header_content_type" -s -k -o /dev/null -w "%{http_code}" "$api_endpoint" -d "$body_json"
 }
@@ -133,8 +125,6 @@ function get_token() {
   grant_type='grant_type=client_credentials'
   client_id="client_id=${OPENID_CLIENT}"
   client_secret="client_secret=${OPENID_CLIENT_SECRET}"
-  user="username=${OPENID_USER}"
-  pass="password=${OPENID_PASS}"
   openid_token_url="${OPENID_AUTH_URL}/protocol/openid-connect/token"
 
   export ACCESS_TOKEN=$(curl -s -k -H "$header_content_type" \
@@ -150,8 +140,6 @@ function get_token() {
     set +x
     exit 1
   fi
-
-  # printf "%s\n" $ACCESS_TOKEN
 }
 
 
