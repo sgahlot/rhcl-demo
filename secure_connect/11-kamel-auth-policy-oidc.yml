@@ -20,14 +20,12 @@ spec:
         value: /api/person
   rules:
     authentication:
-      with_api_key:
-        apiKey:
-          selector:
-            matchLabels:
-              kuadrant.io/apikeys-by: api_key
-        credentials:
-          customHeader:
-            name: api_key
+      keycloak-users:
+        jwt:
+          issuerUrl: ${OPENID_AUTH_URL}
+        # credentials:
+        #   customHeader:
+        #     name: Authorization
         # routeSelectors:
         # - matches:
         #   - method: POST
