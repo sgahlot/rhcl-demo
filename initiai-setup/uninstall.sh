@@ -4,7 +4,7 @@ CURR_DIR=`dirname "$0"`
 cd $CURR_DIR
 
 KS_NAMESPACE="kuadrant-system"
-DELETE_PARAMS=--wait=true --cascade=background --ignore-not-found --timeout=300s
+DELETE_PARAMS="--wait=true --cascade=background --ignore-not-found --timeout=300s"
 
 printf "\nDeleting kuadrant config...\n"
 oc delete -f 06-kuadrant-config.yml $DELETE_PARAMS

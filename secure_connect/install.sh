@@ -133,7 +133,7 @@ printf "\nCreating a HTTPRoute for our Gateway to route traffic to the 'kamel' a
 envsubst < 08-kamel-httproute.yml | oc apply -f -
 
 printf "\nApplying an Auth policy for GET/POST operations on the kamel HTTPRoute...\n"
-envsubst < 10-kamel-auth-policy.yml | oc apply -f -
+envsubst < 09-kamel-auth-policy.yml | oc apply -f -
 
 printf "\nVerifying the DNS policy whether it is Enforced or not...\n"
 counter=0

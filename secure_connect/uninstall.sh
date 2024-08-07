@@ -4,7 +4,7 @@ CURR_DIR=`dirname "$0"`
 cd $CURR_DIR
 
 printf "\n-->> Deleting all the resources used for securing and connecting the APIs...\n"
-for i in 10-kamel-auth-policy.yml       \
+for i in 09-kamel-auth-policy.yml       \
          08-kamel-httproute.yml         \
          07-dns-policy.yml              \
          06-tls-policy.yml              \
