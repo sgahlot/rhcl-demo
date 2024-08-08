@@ -22,15 +22,6 @@ spec:
       path:
         type: PathPrefix
         value: /api/person
-  # - backendRefs:
-  #   - name: rest-api
-  #     namespace: "${KAMEL_NS}"
-  #     port: 80
-  #   matches:
-  #   - method: GET
-  #     path:
-  #       type: Exact
-  #       value: /api/person/status
   - backendRefs:
     - name: rest-api
       namespace: "${KAMEL_NS}"
