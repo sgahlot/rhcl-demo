@@ -37,9 +37,9 @@ RHCL depends on the following prerequisites:
 ... Client Protocol set to `openid-connect`
 ... Access Type set to `confidential`
 ... Service Account Enabled set to `ON`
-. `kamel` command line tool
-.. _This is NOT a RHCL prerequisite but since we will be using Red Hat build of Apache Camel, having a kamel binary
-on your system is also a prerequisite. Install the `kamel` binary from OCP `Command Line Tools` link._
+. `Java`
+.. _This is NOT a RHCL prerequisite but since we will be using Red Hat build of Apache Camel,
+Java is needed to build the jar file from Camel sources, for deploying in OpenShift_
 . Clone this repository on your system
 .. _Create an environment variable named `RHCL_DEMO_HOME` to point to the cloned directory._
 
@@ -91,8 +91,10 @@ The following environment variables need to be setup for installation and setup 
 .. Default value set to _lets-encrypt_. This can be left as is
 . `EMAIL`
 .. Set to your email address
-. `KAMEL_NS`
-.. Default value set to _kamel-test_. This can be left as is
+. `CAMEL_NS`
+.. Default value set to _camel-test_. This can be left as is
+. `CAMEL_ROUTE_NAME`
+.. Default value set to _camel-route_. This can be left as is
 . `OPENID_HOST`
 .. Keycloak Host - used as part of SSO to retrieve JWT as well as for verification of the JWT by RHCL
 . `OPENID_REALM`
@@ -122,7 +124,7 @@ cd $RHCL_DEMO_HOME
 ./install.sh            # <.>
 ----
 <.> This script will perform the following actions:
-.. Installs a REST application using Kamel in OpenShift cluster
+.. Installs a REST application using Red Hat build of Apache Camel in OpenShift cluster
 .. Installs Red Hat Connectivity Link
 .. Secures the APIs and configures exposed by Red Hat Connectivity Link to route messages to Camel
 
@@ -134,17 +136,30 @@ it is ready to process any messages_*
 
 == Test RHCL integration with Camel and SSO
 
-=== Test GET operation
+=== GET operation for status
 To test the RHCL integration with Camel run the following command in a terminal:
 
 [source,bash,options="nowrap"]
 ----
-$RHCL_DEMO_HOME/secure_connect/test-camel-route.sh GET
+$RHCL_DEMO_HOME/secure_connect/test-camel-route.sh GET status
 ----
-This script performs a GET call to verify the connectivity status, _with a timeout of 300 seconds_
+This script invokes a GET call to verify the connectivity status
 
 
-=== Test POST operation
+=== GET operation for data
+To test the RHCL integration with Camel run the following command in a terminal:
+
+[source,bash,options="nowrap"]
+----
+$RHCL_DEMO_HOME/secure_connect/test-camel-route.sh GET data
+----
+This script invokes a GET call to retrieve all the Persons available in the application
+
+[NOTE]
+_To format the JSON response, pipe the result to `jq` in the above command_
+
+
+=== POST operation for inserting a new Person
 To insert a new record in the application run the following command in a terminal:
 
 [source,bash,options="nowrap"]
@@ -158,7 +173,7 @@ in the Camel application by sending the JSON body to the route exposed via RHCL
 _When invoking the `POST` call, this script will also retrieve the JWT from OIDC provider as the JWT is used
 for authentication purpose._
 
-=== Test PUT operation
+=== PUT operation for updating an existing Person
 To update an existing record in the application run the following command in a terminal:
 
 [source,bash,options="nowrap"]
@@ -179,7 +194,7 @@ Once the previous test is successful, execute the following command to retrieve 
 
 [source,bash,options="nowrap"]
 ----
-curl -k "https://$(oc get httproute kamel-rest -n ${KAMEL_NS} -o=jsonpath='{.spec.hostnames[0]}')/api/person"
+curl -k "https://$(oc get httproute ${CAMEL_ROUTE_NAME} -n ${CAMEL_NS} -o=jsonpath='{.spec.hostnames[0]}')/api/person"
 ----
 
 

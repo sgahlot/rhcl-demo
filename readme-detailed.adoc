@@ -31,9 +31,9 @@ RHCL depends on the following prerequisites:
 .. route53:ListResourceRecordSets
 .. route53:GetHostedZone
 .. route53:ListHostedZones
-. `kamel` command line tool
-.. _This is NOT a RHCL prerequisite but since we will be using Red Hat build of Apache Camel, having a kamel binary
-on your system is also a prerequisite. Install the `kamel` binary from OCP `Command Line Tools` link._
+. `Java`
+.. _This is NOT a RHCL prerequisite but since we will be using Red Hat build of Apache Camel
+Java is needed to build the jar file, from Camel sources, for deploying in OpenShift_
 . Clone this repository on your system
 .. _Create an environment variable named `RHCL_DEMO_HOME` to point to the cloned directory._
 
@@ -70,12 +70,12 @@ This section provides information on installation and deployment of a REST appli
 ----
 cd $RHCL_DEMO_HOME/camel
 
-# Install a REST application using Kamel in OpenShift cluster
+# Install a REST application using Camel in OpenShift cluster
 ./install.sh
 ----
 
 [IMPORTANT]
-*_Even though the script will finish in a few seconds, the application deployment will take around 10 minutes before
+*_Even though the script will finish in a few seconds, the application deployment will take around 2-3 minutes before
 it is ready to process any messages_*
 
 
@@ -160,7 +160,7 @@ Once the previous test is successful, execute the following command to retrieve 
 
 [source,bash,options="nowrap"]
 ----
-curl -k "https://$(oc get httproute kamel-rest -n ${KAMEL_NS} -o=jsonpath='{.spec.hostnames[0]}')/api/person"
+curl -k "https://$(oc get httproute ${CAMEL_ROUTE_NAME} -n ${CAMEL_NS} -o=jsonpath='{.spec.hostnames[0]}')/api/person"
 ----
 
 [NOTE]

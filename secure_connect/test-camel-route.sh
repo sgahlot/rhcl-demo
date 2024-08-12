@@ -2,8 +2,8 @@
 
 
 function check_env() {
-  if [ "$KAMEL_NS" == "" ]; then
-    printf "\n ERROR: Please setup 'KAMEL_NS' env variable to point to the namespace where the Camel application is deployed\n"
+  if [ "$CAMEL_NS" == "" ]; then
+    printf "\n ERROR: Please setup 'CAMEL_NS' env variable to point to the namespace where the Camel application is deployed\n"
     exit 1
   fi  
 }
@@ -41,6 +41,11 @@ function USAGE() {
       - POST
       - PUT    
 
+     If the method is 'GET' then one of the following two options can be specified
+     on the command line:
+      - status: only status endpoint will be invoked
+      - data: this will retrieve and display all the persons in the application
+
      If the method is 'POST' then a new person entry will be created using the 
      given 'person_id' and 'person_name'.
       ** Please make sure the id does not already belong to an existing person **
@@ -57,34 +62,65 @@ USAGE_INFO
 function perform_get_call() {
   api_endpoint="$1"
 
-  printf "\nTesting the Camel route for GET operation - should get 200 response...\n"
-  counter=0
-  until curl -s -k -o /dev/null -w "%{http_code}" "$api_endpoint/status" | grep -E "200|403"
-  do
-    printf '.'
-    sleep 1
-    (( counter++ ))
-    # Wait for some time we just implemeted a new AuthPolicy and that takes some time to come into effect
-    if [ $counter -gt 300 ]; then
-      CURL_RESP=`curl -k -o /dev/null -w "%{http_code}" "$api_endpoint/status"`
-      printf "\n\n -->> ERROR:: Curl command should have returned 200 response but we got %d instead <<--\n Exiting!!!\n\n" $CURL_RESP
-      exit
-    fi
-  done
+  if [ "$2" == "status" ]; then
+    api_endpoint="$1/status"
+  fi
 
-  printf "\n\n -->> Route tested successfully (for GET call) after %d seconds...\n" $counter
+  # printf "\nTesting the Camel route for GET operation (for %s) - should get 200 response...\n" $2
+  # echo "API - [$api_endpoint]"
+  # set -x
+  curl -s -k "$api_endpoint"
+  # set +x
+  echo ""
+}
+
+function perform_post_or_put_call() {
+  api_endpoint="$1"
+  person_id=$2
+  person_name="$3"
+  http_method="$4"
+
+  # Get the JWT to use in the next POST/PUT
+  get_token
+
+  header_content_type="Content-Type: application/json"
+  body_json=$(printf '{"id": %s, "name": "%s"}' "$person_id" "$person_name")
+  header_auth="Authorization: Bearer $ACCESS_TOKEN"
+
+  printf "\nUsing the body [%s] for %s operation using JWT for Auth..." "$body_json" "$http_method"
+
+  # set -x
+  curl -X${http_method} -H "$header_auth" -H "$header_content_type" -s -k "$api_endpoint" -d "$body_json"
+  # set +x
+  echo ""
 }
 
 function perform_call() {
   check_env
 
-  api_endpoint="https://$(oc get httproute kamel-rest -n ${KAMEL_NS} -o=jsonpath='{.spec.hostnames[0]}')/api/person"
+  api_endpoint="https://$(oc get httproute ${CAMEL_ROUTE_NAME} -n ${CAMEL_NS} -o=jsonpath='{.spec.hostnames[0]}')/api/person"
 
   http_method=""
   case $1 in
     [gG][eE][tT])
       http_method="GET"
-      perform_get_call "$api_endpoint"
+      if [ $# -ne 2 ]; then
+        printf "\n*** Missing option for GET call\n\n"
+        USAGE
+      else
+          case $2 in
+            [sS][tT][aA][tT][uU][sS])
+              perform_get_call "$api_endpoint" "status"
+              ;;
+            [dD][aA][tT][aA])
+              perform_get_call "$api_endpoint" "data"
+              ;;
+            *)
+              printf "\nOnly 'status' or 'data' are allowed when invoking GET call"
+              printf "\n  GET arg: [%s] <- INVALID VALUE\n\n" $2
+              USAGE
+          esac
+      fi
       exit 0
       ;;
     [pP][uU][tT])
@@ -103,19 +139,7 @@ function perform_call() {
   if [ $# -ne 3 ]; then
     USAGE
   fi
-  person_id=$2
-  person_name="$3"
-
-  # Get the JWT to use in the next POST/PUT
-  get_token
-
-  header_content_type="Content-Type: application/json"
-  body_json=$(printf '{"id": %s, "name": "%s"}' "$person_id" "$person_name")
-  header_auth="Authorization: Bearer $ACCESS_TOKEN"
-
-  printf "\nTesting the Camel route for %s operation using JWT for Auth - should get either 200 or 500 response...\n" "$http_method"
-
-  curl -X${http_method} -H "$header_auth" -H "$header_content_type" -s -k -o /dev/null -w "%{http_code}" "$api_endpoint" -d "$body_json"
+  perform_post_or_put_call "$api_endpoint" "$2" "$3" "$http_method"
 }
 
 function get_token() {
@@ -153,4 +177,3 @@ function process_cmd_args() {
 }
 
 process_cmd_args "$@"
-

@@ -3,27 +3,26 @@
 CURR_DIR=`dirname "$0"`
 cd $CURR_DIR
 
-KAMEL_FOUND=`which kamel`
-if [ "$KAMEL_FOUND" == "" ]; then
-  printf "\n ERROR: kamel binary NOT found in the path. Please install it from OCP 'command line tools' and re-run this script\n"
-  exit -1
+printf "\nCreating %s namespace...\n" $CAMEL_NS
+oc create ns $CAMEL_NS || oc project $CAMEL_NS
+if [ $? -ne 0 ]; then
+  printf "\n\n *** Error when creating %s namespace in OpenShift ***\n" $CAMEL_NS
+  exit 1
 fi
+oc project $CAMEL_NS > /dev/null
 
-if [ "$KAMEL_NS" == "" ]; then
-  printf "\n ERROR: Please setup 'KAMEL_NS' env variable to point to the namespace that will be used for Kamel application\n"
-  exit -1
+mvn_out_file=`mktemp`
+
+# https://quarkus.io/guides/deploying-to-openshift#build-and-deployment
+printf "\nBuilding and installing Camel application in the %s namespace.\n Output from 'mvn' command will be in '%s' file...\n" $CAMEL_NS $mvn_out_file
+./mvnw clean install -Dquarkus.openshift.deploy=true > "$mvn_out_file"
+
+if [ $? -eq 0 ]; then
+  printf "\nDeleting 'target' directory after successful deployment of Camel app in %s namespace...\n" "$CAMEL_NS"
+  rm -rf target   # Delete the target directory created from previous command
+  printf "\n\n *** Camel app is getting deployed. Please give it 2 mins before running any messages through ***\n\n"
+else
+  printf "\n\n *** Error during Came application generation and deployment to OpenShift ***\n"
+  printf "  Please look at %s file for details...\n\n" $mvn_out_file
+  exit 1
 fi
-
-printf "\nSetting up Kamel using the binary found in [%s]. Will be used to setup kamel \n" $KAMEL_FOUND
-
-printf "\nCreating %s namespace...\n" $KAMEL_NS
-oc create ns $KAMEL_NS
-oc project $KAMEL_NS
-
-printf "\nInstall kamel in the %s namespace...\n" $KAMEL_NS
-kamel install
-
-printf "\nRunning API in the %s namespace (in the background)...\n"
-kamel run RestApi.java
-
-printf "\n\n *** Kamel app is getting deployed. Please give it 10 mins before running any messages through ***\n\n"

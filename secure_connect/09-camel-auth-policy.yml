@@ -1,13 +1,13 @@
 apiVersion: kuadrant.io/v1beta2
 kind: AuthPolicy
 metadata:
-  name: kamel-rest
-  namespace: ${KAMEL_NS}
+  name: "${CAMEL_ROUTE_NAME}-auth"
+  namespace: "${CAMEL_NS}"
 spec:
   targetRef:
     group: gateway.networking.k8s.io
     kind: HTTPRoute
-    name: "kamel-rest"
+    name: "${CAMEL_ROUTE_NAME}"
   routeSelectors:
   - matches:
     - method: POST

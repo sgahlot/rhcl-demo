@@ -14,13 +14,13 @@ printf "\nCreating ManagedZone - used by Kuadrant to setup DNS configuration...\
 envsubst < 02-managed-zone.yml | oc apply -f -
 
 printf "\nWaiting for the ManagedZone to be fully ready in %s namespace...\n" $GATEWAY_NS
-oc wait managedzone/managedzone -n $GATEWAY_NS --for="condition=Ready=true"
+oc wait managedzone/managedzone -n $GATEWAY_NS --for="condition=Ready=true" --timeout=300s
 
 printf "\nDefining a TLS issuer for TLS certificates for secure communications to the Gateway...\n"
 envsubst < 03-tls-issuer.yml | oc apply -f -
 
 printf "\nWaiting for the ClusterIssuer to be ready...\n"
-oc wait clusterissuer/${CLUSTER_ISSUER_NAME} --for="condition=ready=true"
+oc wait clusterissuer/${CLUSTER_ISSUER_NAME} --for="condition=ready=true" --timeout=300s
 
 printf "\nSetting up Gateway to accept HttpRoute...\n"
 envsubst < 04-gateway.yml | oc apply -f -
@@ -129,11 +129,11 @@ done
 #   *.$ROOT_DOMAIN_ID CNAME, klb.$ROOT_DOMAIN_ID CNAME (US), klb.$ROOT_DOMAIN_ID CNAME (Default),
 #   kuadrant-cname.us.klb.$ROOT_DOMAIN_ID TXT, us.klb.$ROOT_DOMAIN_ID CNAME, kuadrant-cname-klb.$ROOT_DOMAIN_ID TXT (US),
 #   kuadrant-cname-klb.$ROOT_DOMAIN_ID TXT (Default), kuadrant-cname-wokdcard.$ROOT_DOMAIN_ID TXT (Simple)
-printf "\nCreating a HTTPRoute for our Gateway to route traffic to the 'kamel' app...\n"
-envsubst < 08-kamel-httproute.yml | oc apply -f -
+printf "\nCreating a HTTPRoute for our Gateway to route traffic to the 'Camel' app...\n"
+envsubst < 08-camel-httproute.yml | oc apply -f -
 
-printf "\nApplying an Auth policy for GET/POST operations on the kamel HTTPRoute...\n"
-envsubst < 09-kamel-auth-policy.yml | oc apply -f -
+printf "\nApplying an Auth policy for GET/POST operations on the camel HTTPRoute...\n"
+envsubst < 09-camel-auth-policy.yml | oc apply -f -
 
 printf "\nVerifying the DNS policy whether it is Enforced or not...\n"
 counter=0

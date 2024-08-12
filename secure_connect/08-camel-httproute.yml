@@ -1,21 +1,21 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: kamel-rest
-  namespace: "${KAMEL_NS}"
+  name: "${CAMEL_ROUTE_NAME}"
+  namespace: "${CAMEL_NS}"
   labels:
-    deployment: rest-api
-    service: rest-api
+    deployment: rhcl-demo
+    service: rhcl-demo
 spec:
   parentRefs:
   - name: "$GATEWAY_NAME"
     namespace: "$GATEWAY_NS"
   hostnames:
-  - "kamel-rest.${ROOT_DOMAIN_ID}"
+  - "rhcl-demo.${ROOT_DOMAIN_ID}"
   rules:
   - backendRefs:
-    - name: rest-api
-      namespace: "${KAMEL_NS}"
+    - name: rhcl-demo
+      namespace: "${CAMEL_NS}"
       port: 80
     matches:
     - method: GET
@@ -23,8 +23,8 @@ spec:
         type: PathPrefix
         value: /api/person
   - backendRefs:
-    - name: rest-api
-      namespace: "${KAMEL_NS}"
+    - name: rhcl-demo
+      namespace: "${CAMEL_NS}"
       port: 80
     matches:
     - method: POST
@@ -32,8 +32,8 @@ spec:
         type: Exact
         value: /api/person
   - backendRefs:
-    - name: rest-api
-      namespace: "${KAMEL_NS}"
+    - name: rhcl-demo
+      namespace: "${CAMEL_NS}"
       port: 80
     matches:
     - method: PUT

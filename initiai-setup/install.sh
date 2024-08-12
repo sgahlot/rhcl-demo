@@ -25,7 +25,7 @@ printf "\nConfiguring Istio...\n"
 oc apply -f 02-istio-configure.yml
 
 printf "\nWaiting for the Sail operator to be fully configured...\n"
-oc wait istio/default -n istio-system --for="condition=Ready=true"
+oc wait istio/default -n istio-system --for="condition=Ready=true" --timeout=300s
 
 # Create namespace(s) for Kuadrant/ingress and create secret (based on AWS creds) in them
 printf "\nCreating 'kuadrant-system' namespace...\n"
