@@ -41,9 +41,6 @@ oc get crd -l operators.coreos.com/dns-operator.kuadrant-system -o Name | xargs 
 oc get crd -l operators.coreos.com/limitador-operator.kuadrant-system -o Name | xargs oc delete $DELETE_PARAMS
 oc get crd -l operators.coreos.com/kuadrant-operator.kuadrant-system -o Name | xargs oc delete $DELETE_PARAMS
 
-printf "\nDeleting CRD associated with Camel...\n"
-oc get crd -l 'app=camel-k' -o Name | xargs oc delete $DELETE_PARAMS
-
 printf "\nDeleting $KS_NAMESPACE namespace...\n"
 oc delete ns $KS_NAMESPACE
 
