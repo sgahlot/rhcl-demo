@@ -20,7 +20,7 @@ printf "\nBuilding and installing Camel application in the %s namespace.\n Outpu
 if [ $? -eq 0 ]; then
   printf "\nDeleting 'target' directory after successful deployment of Camel app in %s namespace...\n" "$CAMEL_NS"
   rm -rf target   # Delete the target directory created from previous command
-  printf "\n\n *** Camel app is getting deployed. Please give it 2 mins before running any messages through ***\n\n"
+  printf "\n\n *** Camel app is getting deployed ***\n\n"
 else
   printf "\n\n *** Error during Came application generation and deployment to OpenShift ***\n"
   printf "  Please look at %s file for details...\n\n" $mvn_out_file
