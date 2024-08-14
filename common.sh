@@ -30,7 +30,7 @@ function check_openshift_login() {
   check_oc_login=`oc whoami 2>&1`
   case "$check_oc_login" in
     *Error*forbidden*|*error*"must be logged in"*)
-      printf "\n\n --->>> Got error when querying 'oc'. Please logic to OpenShift first...\n\n"
+      printf "\n\n --->>> Got error when querying 'oc'. Please login to OpenShift first...\n\n"
       exit 1
     ;;
   esac
