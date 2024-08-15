@@ -9,12 +9,14 @@
 
 :url-rhcl-overview: https://developers.redhat.com/products/red-hat-connectivity-link/overview
 :url-rhcl-getting-started: https://developers.redhat.com/articles/2024/06/12/getting-started-red-hat-connectivity-link-openshift
+:url-rhcl-getting-started-pre-req: https://developers.redhat.com/articles/2024/06/12/getting-started-red-hat-connectivity-link-openshift#prerequisites
+:url-create-subdomain: https://repost.aws/knowledge-center/create-subdomain-route-53
 :url-rhcl-install-on-openshift: https://docs.kuadrant.io/0.8.0/kuadrant-operator/doc/install/install-openshift/
 :url-rhcl-secure-n-connect: https://docs.kuadrant.io/0.8.0/kuadrant-operator/doc/user-guides/secure-protect-connect-single-multi-cluster/
 :url-rhdh-lifecycle: https://access.redhat.com/support/policy/updates/developerhub
 
 
-This readme provides instructions to install and configure RHCL ({url-rhcl-overview}[_Red Hat Connectivity Link_]) as
+This readme provides instructions to install and configure *RHCL* ({url-rhcl-overview}[_Red Hat Connectivity Link_]) as
 well as Red Hat build of Apache Camel in a repeatable manner. Once everything is configured, we will use this setup to
 showcase RHCL integration with Camel and SSO.
 
@@ -24,7 +26,11 @@ RHCL depends on the following prerequisites:
 . OpenShift cluster running on AWS
 . `oc` command line tool is installed
 . Logged in to OpenShift using the `oc` client
-. Access to a DNS domain (called a hosted zone in AWS Route53), different from the domain used for the OpenShift cluster
+. Access to a DNS domain (called a hosted zone in AWS Route53):
+.. This domain should be different from the domain used for the OpenShift cluster
+.. Should be a subdomain under the top domain
+... e.g. If `api.<TOP_DOMAIN>` is used for cluster API server and `*.apps.<TOP_DOMAIN>` is used for applications running in OCP then created
+    a `rhcl.<TOP_DOMAIN>` for RHCL
 .. Top domain hosted zone should have NS records for the RHCL hosted zone
 . The IAM user should have at least these permissions:
 .. route53:ChangeResourceRecordSets
@@ -45,7 +51,8 @@ Java is needed to build the jar file from Camel sources, for deploying in OpenSh
 
 [NOTE]
 ====
-. _For more details on the prerequisites, follow the {url-rhcl-getting-started}[getting started article]._
+. _Follow the {url-rhcl-getting-started-pre-req}[Getting Started] article for more details on the `DNS domain` prerequisite._
+.. _More information regarding `Creating a subdomain` can be found in {url-create-subdomain}[this article]._
 . _The RHCL install and uninstall scripts makes use of `envsubst` command that is available on Mac and Linux._
 ====
 

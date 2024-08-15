@@ -1,8 +1,6 @@
 package com.redhat.rhcl.demo;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
