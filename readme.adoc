@@ -228,7 +228,7 @@ The following versions of various components are used for this demo:
 * OpenShift: `4.15.4`
 * Kuadrant operator: `v0.8.0`
 * Sail operator: `3.0.0-dp1`
-* API Gateway: `v1.1.0`
+* Gateway API: `v1.1.0`
 * Quarkus: `3.8.5.SP1-redhat-00001`
 ** _Quarkus is used for Red Hat build of Apache Camel_
 
