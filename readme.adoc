@@ -32,11 +32,45 @@ RHCL depends on the following prerequisites:
 ... e.g. If `api.<TOP_DOMAIN>` is used for cluster API server and `*.apps.<TOP_DOMAIN>` is used for applications running in OCP then created
     a `rhcl.<TOP_DOMAIN>` for RHCL
 .. Top domain hosted zone should have NS records for the RHCL hosted zone
-. The IAM user should have at least these permissions:
-.. route53:ChangeResourceRecordSets
-.. route53:ListResourceRecordSets
-.. route53:GetHostedZone
-.. route53:ListHostedZones
+. The IAM user should have at least the follow permissions:
+[source,json]
+----
+{
+    "Statement": [
+        {
+            "Action": [
+                "route53:ListHostedZones"
+            ],
+            "Effect": "Allow",
+            "Resource": "*",
+            "Sid": "ListHostedZones"
+        },
+        {
+            "Action": [
+                "route53:ChangeResourceRecordSets",
+                "route53:ListResourceRecordSets",
+                "route53:GetHostedZone"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:route53:::hostedzone/<HOSTED_ZONE_ID>"
+            ],
+            "Sid": "WriteHostedZones"
+        },
+        {
+            "Action": [
+                "route53:GetChange"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:route53:::change/*"
+            ],
+            "Sid": "GetChange"
+        }
+    ],
+    "Version": "2012-10-17"
+}
+----
 . Red Hat SSO with the following resources set up:
 .. Realm
 .. OIDC client with following setup:
@@ -81,9 +115,9 @@ cp env.template .env    # <.>
 The following environment variables need to be setup for installation and setup of RHCL:
 
 . `HOSTED_ZONE_ID`
-.. ID of the Hosted Zone in AWS that will be used by RHCL
+.. This is the ID of the Hosted Zone for the AWS for the rhcl domain
 . `ROOT_DOMAIN_ID`
-.. DNS domain used by RHCL - should be different than the domain used by OCP
+.. The FQDN for the rhcl domain - Remember that should be a different than the one used by OCP
 . `GATEWAY_NS`
 .. Default value set to _api-gateway_. This can be left as is
 . `GATEWAY_NAME`
@@ -110,6 +144,10 @@ The following environment variables need to be setup for installation and setup 
 .. Client name in Keycloak realm - used as part of SSO retrieve JWT as well as for verification of the JWT by RHCL
 . `OPENID_CLIENT_SECRET`
 .. Client secret - used as part of SSO retrieve JWT as well as for verification of the JWT by RHCL
+. `KUBECONFIG`
+.. Path to the kubeconfig file. This is optional and can be left as is
+. `JAVA_HOME`
+.. Path to the Java home directory. This is optional and can be left as is
 ====
 
 
@@ -239,4 +277,3 @@ The following versions of various components are used for this demo:
 * {url-rhcl-getting-started}[RHCL - Getting Started] +
 * {url-rhcl-install-on-openshift}[RHCL - Installation] +
 * {url-rhcl-secure-n-connect}[RHCL - Secure and connect APIs] +
-
