@@ -22,5 +22,5 @@ spec:
     authentication:
       keycloak-users:
         jwt:
-          issuerUrl: ${OPENID_AUTH_URL}
+          issuerUrl: ${OPENID_ISSUER_URL}
 

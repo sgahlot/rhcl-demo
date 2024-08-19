@@ -4,7 +4,8 @@ function check_env() {
   missing_vars=()
   required_vars=(GATEWAY_NS GATEWAY_NAME CLUSTER_ISSUER_NAME HOSTED_ZONE_ID ROOT_DOMAIN_ID \
                  AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION EMAIL CAMEL_NS \
-                 CAMEL_ROUTE_NAME OPENID_HOST OPENID_REALM OPENID_CLIENT OPENID_CLIENT_SECRET)
+                 CAMEL_ROUTE_NAME OPENID_HOST OPENID_REALM OPENID_CLIENT OPENID_CLIENT_SECRET \
+                 OPENID_ISSUER_URL OPENID_TOKEN_URL)
   for var in "${required_vars[@]}"; do
     [ -z "${!var}" ] && { missing_vars+=("$var"); }
   done
