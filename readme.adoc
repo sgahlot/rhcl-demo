@@ -29,8 +29,7 @@ RHCL depends on the following prerequisites:
 . Access to a DNS domain (called a hosted zone in AWS Route53):
 .. This domain should be different from the domain used for the OpenShift cluster
 .. Should be a subdomain under the top domain
-... e.g. If `api.<TOP_DOMAIN>` is used for cluster API server and `*.apps.<TOP_DOMAIN>` is used for applications running in OCP then created
-    a `rhcl.<TOP_DOMAIN>` for RHCL
+... e.g. If `api.<TOP_DOMAIN>` is used for cluster API server and `*.apps.<TOP_DOMAIN>` is used for applications running in OCP then create `rhcl.<TOP_DOMAIN>` for RHCL
 .. Top domain hosted zone should have NS records for the RHCL hosted zone
 . The IAM user should have at least the follow permissions:
 [source,json]
